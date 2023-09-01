@@ -1,93 +1,64 @@
 CREATE TABLE construtora 
-(
-    nome_fantasia VARCHAR2,
-    nome VARCHAR2,
-    cnpj INT UNIQUE,
-    codigo CHAR(4) PRIMARY KEY,
-);
+	(
+ 		nome_fantasia VARCHAR(40) NOT NULL,  
+ 		nome VARCHAR(40) NOT NULL,  
+ 		CNPJ VARCHAR(18) NOT NULL,  
+ 		codigo INT PRIMARY KEY,  
+ 		UNIQUE (CNPJ)
+	);
 
 CREATE TABLE telefones 
-(
-    id_construtora CHAR(4) PRIMARY KEY,
-    telefones INT,
-    CONSTRAINT id_construtora FOREIGN KEY construtora REFERENCES construtora (codigo)
-);
-
-CREATE TABLE trabalhadores 
-(
-    codigo CHAR(4) PRIMARY KEY,
-    salario FLOAT,
-    nome VARCHAR2,
-    cpf INT UNIQUE
-);
-
-CREATE TABLE trabalhando 
-(
-    id_construtora CHAR(4) PRIMARY KEY,
-    id_trabalhadores CHAR(4),
-    cpf INT PRIMARY KEY UNIQUE,
-    contrato_inicio DATE,
-    contrato_fim DATE,
-    CONSTRAINT id_construtora FOREIGN KEY construtora REFERENCES construtora (codigo),
-    CONSTRAINT id_trabalhadores FOREIGN KEY trabalhadores REFERENCES trabalhadores (codigo)
-);
+	(
+		numero VARCHAR(30) NOT NULL,
+		FK_construtora_tel INT,
+		UNIQUE(numero),
+		CONSTRAINT FK_construtora_tel FOREIGN KEY (FK_construtora_tel) REFERENCES construtora (Codigo)
+	);
 
 CREATE TABLE obras 
-(
-    nome VARCHAR2,
-    codigo CHAR(4) PRIMARY KEY UNIQUE,
-    numero CHAR(5),
-    logradura VARCHAR2,
-    complemento VARCHAR2
-);
+	( 
+ 		nome VARCHAR(40) NOT NULL,  
+ 		codigo INT PRIMARY KEY,  
+ 		numero INT NOT NULL,  
+ 		logradura VARCHAR(50) NOT NULL,  
+ 		complemento VARCHAR(60),  
+ 		FK_Codigo_construtora INT,  
+		CONSTRAINT FK_Codigo_construtora FOREIGN KEY (FK_Codigo_construtora) REFERENCES construtora (Codigo)
+	);
 
-CREATE TABLE contratos 
-(
-    id_construtora CHAR(4) PRIMARY KEY,
-    id_obras       CHAR(4),
-    data_inicio    DATE,
-    data_fim       DATE,
-    CONSTRAINT id_construtora FOREIGN KEY construtora REFERENCES construtora (codigo),
-    CONSTRAINT id_obras FOREIGN KEY obras REFERENCES obras (codigo)
-);
-
-CREATE TABLE obras_de_trabalho 
-(
-    id_trabalhadores CHAR(4) PRIMARY KEY,
-    id_obras         CHAR(4),
-    data_inicio      DATE,
-    data_fim         DATE,
-    CONSTRAINT id_trabalhadores FOREIGN KEY trabalhadores REFERENCES trabalhadores (codigo),
-    CONSTRAINT id_obras FOREIGN KEY obras REFERENCES obras (codigo)
-
-);
-
-CREATE TABLE equipamentos 
-(
-    valor_de_uso_diario TIMESTAMP,
-    nome VARCHAR2,
-    codigo CHAR(4) PRIMARY KEY
-);
-
-CREATE  TABLE periodo_de_uso 
-(
-    id_obras CHAR(4) PRIMARY KEY,
-    id_equipamentos CHAR(4),
-    data_inicio DATE,
-    data_fim DATE,
-    CONSTRAINT id_obras FOREIGN KEY obras REFERENCES obras (codigo),
-    CONSTRAINT id_equipamentos FOREIGN KEY equipamentos REFERENCES equipamentos (codigo)
-);
+CREATE TABLE trabalhadores 
+	( 
+ 		salario FLOAT NOT NULL,  
+ 		nome VARCHAR(40) NOT NULL,  
+ 		cpf VARCHAR(40) PRIMARY KEY,
+		FK_Codigo_obras_trab INT,
+    	CONSTRAINT FK_Codigo_obras_trab FOREIGN KEY (FK_Codigo_obras_trab) REFERENCES obras (codigo)
+	);
 
 CREATE TABLE categoria 
-(
-    descricao VARCHAR2,
-    codigo CHAR(4) PRIMARY KEY
-);
+	( 
+ 		codigo INT PRIMARY KEY,  
+ 		descricao VARCHAR(80) NOT NULL
+	); 
 
-CREATE TABLE categoria_equipamentos 
-(
-    id_categoria CHAR(4) PRIMARY KEY,
-    id_equipamentos CHAR(4),
-    descrição VARCHAR2
-);
+CREATE TABLE equipamentos 
+	( 
+ 		valor_de_uso_diario FLOAT NOT NULL,  
+ 		nome VARCHAR(40) NOT NULL,  
+ 		codigo INT PRIMARY KEY,  
+ 		FK_Codigo_categoria INT,  
+		CONSTRAINT FK_Codigo_categoria FOREIGN KEY (FK_Codigo_categoria) REFERENCES categoria (codigo)
+	); 
+
+CREATE TABLE Periodo_de_uso
+	( 
+ 		data_inicio DATE NOT NULL,  
+ 		data_final DATE NOT NULL,  
+ 		FK_Codigo_obras INT, 
+ 		FK_Codigo_equipamentos INT,
+		CONSTRAINT FK_Codigo_obras FOREIGN KEY (FK_Codigo_obras) REFERENCES obras (codigo),
+    	CONSTRAINT FK_Codigo_equipamentos FOREIGN KEY (FK_Codigo_equipamentos) REFERENCES equipamentos (codigo) 
+	);
+
+--- Alterando a formatação da data para o modelo 20/08/2000
+ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY'
